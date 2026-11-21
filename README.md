@@ -9,7 +9,7 @@ A repository-wide cleanup skill for **Claude Code** and **OpenAI Codex**.
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude_Code-plugin-6B4FBB)](#claude-code)
 [![Codex](https://img.shields.io/badge/OpenAI_Codex-plugin-24292F)](#openai-codex)
-[![Validation](https://github.com/Galaxerr/repo-hygiene-skill/actions/workflows/validate.yml/badge.svg)](https://github.com/Galaxerr/repo-hygiene-skill/actions/workflows/validate.yml)
+[![Validation](https://github.com/Galaxerr/repository-hygiene-skill/actions/workflows/validate.yml/badge.svg)](https://github.com/Galaxerr/repository-hygiene-skill/actions/workflows/validate.yml)
 
 [Installation](#installation) · [How it works](#how-it-works) · [Examples](#usage-examples) · [Safety](#safety-by-design) · [Contributing](#contributing)
 
@@ -86,13 +86,25 @@ Audit this repository. Produce an evidence-backed cleanup plan.
 
 ### Local validation before publishing
 
+From a clean Git checkout, use Git and Python 3.12 with `venv` and pip available.
+
 ```bash
+validation_env=$(mktemp -d)
+python3 -m venv "$validation_env"
+source "$validation_env/bin/activate"
+python3 -m pip install --only-binary=:all: -r tests/requirements.txt
 python3 tests/validate_package.py
-claude plugin validate ./plugins/repo-hygiene
-claude plugin validate .
+python3 tests/test_validate_package.py
 ```
 
-These check package structure and Claude plugin metadata. **They do not prove real-world cleanup accuracy or marketplace installation success.** Test installation in both tools before your first release.
+GitHub Actions runs the same checks on pull requests and pushes to `main`. Both commands run offline after installing the validation dependencies. Use relative Markdown links to tracked files within the skill directory. Resource symlink targets must be tracked and use a relative path without parent traversal.
+
+During release qualification, run the vendor checks and test installation in both clients.
+
+```bash
+claude plugin validate --strict ./plugins/repo-hygiene
+claude plugin validate --strict .
+```
 
 ## How it works
 
@@ -216,6 +228,8 @@ plugins/repo-hygiene/
     assets/findings-template.md          Report template
     tests/eval-cases.md                  Behavioral evaluation scenarios
 tests/validate_package.py                Package structural checks
+tests/test_validate_package.py           Validator regression tests
+tests/requirements.txt                   Validation dependencies
 .github/workflows/validate.yml           CI package validation
 ```
 
@@ -237,6 +251,8 @@ Issues and pull requests are welcome, especially for:
 - Compatibility fixes for Claude Code or Codex marketplace packaging.
 
 When proposing a behavioral change, include a minimal reproducible repository example and the expected audit outcome. Keep the core skill portable and avoid adding mandatory runtime dependencies.
+
+For package changes, run the [local validation commands](#local-validation-before-publishing) used by CI.
 
 ## License
 
