@@ -1,8 +1,10 @@
-"""Offline regression checks for setup and capture."""
+"""Offline regression checks for setup, capture, and the README example."""
 
+import ast
 import json
 import os
 from pathlib import Path
+import re
 import subprocess
 import sys
 import tempfile
@@ -12,6 +14,34 @@ SOURCE = Path(__file__).resolve().parent
 
 
 class EvaluationProcedure(unittest.TestCase):
+    def test_readme_cleanup_keeps_the_fixture_contracts(self):
+        with tempfile.TemporaryDirectory() as directory:
+            repo = Path(directory) / "fixture"
+            subprocess.run(["bash", SOURCE / "prepare.sh", "dirty", repo], check=True)
+            mentions = [
+                path.relative_to(repo).as_posix()
+                for path in repo.rglob("*.py")
+                for _ in re.finditer(r"\b_obsolete_label\b", path.read_text(encoding="utf-8"))
+            ]
+            self.assertEqual(mentions, ["ledger/service.py"])
+            service = repo / "ledger" / "service.py"
+            original = service.read_text(encoding="utf-8")
+            formatter = next(
+                node for node in ast.parse(original).body
+                if isinstance(node, ast.FunctionDef) and node.name == "_obsolete_label"
+            )
+            lines = original.splitlines(keepends=True)
+            del lines[formatter.lineno - 1 : formatter.end_lineno]
+            service.write_text("".join(lines), encoding="utf-8")
+
+            subprocess.run([sys.executable, "-B", "-m", "unittest", "-v"], cwd=repo, check=True)
+            for profile in ("standard", "extended"):
+                args = [] if profile == "standard" else ["--profile", profile]
+                output = subprocess.check_output(
+                    [sys.executable, "-B", "-m", "ledger", *args], cwd=repo, text=True
+                )
+                self.assertEqual(output, f"{profile}:sample\n")
+
     def test_dirty_fixture_is_isolated_and_changes_are_detectable(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
