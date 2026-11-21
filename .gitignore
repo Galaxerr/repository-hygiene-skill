@@ -1,0 +1,16 @@
+# Local plans and assistant configuration
+/.scratch/
+/.codex/
+/.agents/*
+!/.agents/plugins/
+/.agents/plugins/*
+!/.agents/plugins/marketplace.json
+/.claude/
+
+# Local credentials and environment overrides
+/.aws/
+.env
+.env.*
+!.env.example
+*.pem
+*.key

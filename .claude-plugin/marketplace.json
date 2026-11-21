@@ -1,0 +1,15 @@
+{
+  "name": "repo-hygiene-marketplace",
+  "owner": {
+    "name": "Galaxerr"
+  },
+  "metadata": {
+    "description": "The Repository Hygiene plugin for evidence-backed cleanup audits."
+  },
+  "plugins": [
+    {
+      "name": "repo-hygiene",
+      "source": "./plugins/repo-hygiene"
+    }
+  ]
+}
