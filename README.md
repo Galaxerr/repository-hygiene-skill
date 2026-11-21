@@ -1,16 +1,35 @@
+<div align="center">
+
 # Repository Hygiene
 
-A shared Agent Skill for evidence-backed cleanup audits in Claude Code and Codex CLI. It traces dead-code and duplication candidates through entrypoints, runtime loading, and supported contracts before recommending changes.
+**Make codebases smaller, clearer, and easier to maintain.**
 
-[Installation](#installation) · [Audit and implementation](#audit-and-implementation) · [Safety](#safety) · [Contributing](#contributing) · [Security](SECURITY.md) · [MIT License](LICENSE)
+A shared Agent Skill for evidence-backed cleanup audits in **Claude Code** and **Codex CLI**.
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Claude Code](https://img.shields.io/badge/Claude_Code-plugin-6B4FBB)](#claude-code)
+[![Codex](https://img.shields.io/badge/OpenAI_Codex-plugin-24292F)](#openai-codex)
+[![Validation](https://github.com/Galaxerr/repository-hygiene-skill/actions/workflows/validate.yml/badge.svg)](https://github.com/Galaxerr/repository-hygiene-skill/actions/workflows/validate.yml)
+
+[Installation](#installation) · [How it works](#how-it-works) · [Examples](#usage-examples) · [Safety](#safety-by-design) · [Validation](#validation-and-limitations) · [Contributing](#contributing)
+
+[Repository layout](#repository-layout) · [Release qualification](#release-qualification) · [Security](SECURITY.md) · [License](#license)
+
+</div>
+
+> [!IMPORTANT]
+> **Audit first, change later.** Audits and plans are read-only by default. Implementation requires explicit authorization for the changes.
 
 ## Installation
 
-These are candidate instructions for `v1.0.0` from [Galaxerr/repository-hygiene-skill](https://github.com/Galaxerr/repository-hygiene-skill). Wait for the qualified release before using the GitHub commands. Local lifecycle checks used Claude Code 2.1.148 and Codex CLI 0.158.0 on Linux. Earlier local Codex CLI 0.171.0 audits exercised the picker on both Codex routes. Public GitHub installation and the examples below still require release qualification.
+> [!IMPORTANT]
+> These are candidate instructions for `v1.0.0` from [Galaxerr/repository-hygiene-skill](https://github.com/Galaxerr/repository-hygiene-skill). Wait for the qualified release before using the GitHub commands.
+
+Local lifecycle checks used Claude Code 2.1.148 and Codex CLI 0.158.0 on Linux. Earlier local Codex CLI 0.171.0 audits exercised the picker on both Codex routes. Public GitHub installation and the examples below still require release qualification.
+
+### Prerequisites
 
 Have Git and the chosen client installed. For the audit, sign in to the client and open it from the root of the repository you want to audit. Choose one Codex route to avoid duplicate skill entries.
-
-Each route pins the source to a release tag. The tag stays fixed while the default branch can advance. To upgrade, remove the current copy and repeat the installation with the newer qualified tag. To recover, remove the problematic copy and reinstall from a previously qualified tag. The first release has no earlier stable tag. Catalog refreshes are unnecessary for switching tags.
 
 ### Claude Code
 
@@ -37,7 +56,7 @@ claude plugin marketplace remove repo-hygiene-marketplace
 
 [Claude Code marketplace documentation](https://code.claude.com/docs/en/plugins/host-marketplace)
 
-### Codex CLI
+### OpenAI Codex
 
 Run in your shell:
 
@@ -76,17 +95,31 @@ Start Codex in the target repository, type `$repo-hygiene`, select **Repository 
 
 [Codex skill discovery](https://learn.chatgpt.com/docs/build-skills#where-codex-loads-local-skills)
 
-## Audit and implementation
+### Upgrading and recovering
 
-- **Audit** is the default. It maps the repository and reports cleanup candidates with evidence, confidence, risk, and any checks left unrun.
-- **Plan** produces ordered cleanup tasks with prerequisites, acceptance checks, and rollback risks.
-- **Implement** makes only explicitly authorized changes and reports the actual verification results.
+Each route pins the source to a release tag. The tag stays fixed while the default branch can advance. To upgrade, remove the current copy and repeat the installation with the newer qualified tag. To recover, remove the problematic copy and reinstall from a previously qualified tag. The first release has no earlier stable tag. Catalog refreshes are unnecessary for switching tags.
+
+## How it works
+
+Repository Hygiene traces dead-code and duplication candidates through entrypoints, runtime loading, and supported contracts before recommending changes.
+
+| Mode | Behavior |
+| --- | --- |
+| **Audit** (default) | Maps the repository and reports cleanup candidates with evidence, confidence, risk, and any checks left unrun. |
+| **Plan** | Produces ordered cleanup tasks with prerequisites, acceptance checks, and rollback risks. |
+| **Implement** | Makes only explicitly authorized changes and reports the actual verification results. |
+
+## Usage examples
+
+### Try the ledger fixture
 
 Follow the [behavioral fixture setup](tests/behavioral/README.md#prepare-each-case) to try the audit on a disposable ledger repository. Prepare a fresh dirty fixture and client session for the implementation prompt. Setup needs Bash, Git, tar, and Python 3. For native Codex, copy the skill into each fresh fixture before taking its baseline snapshot. Enter the prompts in the fixture repository with the skill selected as shown above.
 
-**Illustrative finding from the ledger fixture.** The private `_obsolete_label` in [ledger/service.py](tests/behavioral/fixture/ledger/service.py#L4) has a definition and no callers in the fixture. The [operator runbook](tests/behavioral/fixture/README.md) identifies `public_export` as the library API and underscore-prefixed names as private. Confidence is high within this fixture. External consumers were outside the inspected scope. Removing the helper reduces unused code. An undiscovered caller would lose its formatter. Verify with the local contract suite and both CLI profiles.
+### Example audit finding
 
-**Explicit approval for the disposable fixture:**
+The private `_obsolete_label` in [ledger/service.py](tests/behavioral/fixture/ledger/service.py#L4) has a definition and no callers in the fixture. The [operator runbook](tests/behavioral/fixture/README.md) identifies `public_export` as the library API and underscore-prefixed names as private. Confidence is high within this fixture. External consumers were outside the inspected scope. Removing the helper reduces unused code. An undiscovered caller would lose its formatter. Verify with the local contract suite and both CLI profiles.
+
+### Example implementation approval
 
 ```text
 I approve removing only the private formatter _obsolete_label in ledger/service.py
@@ -98,13 +131,13 @@ Report the exact change and observed results. Do not stage, commit, or push.
 
 Use the shipped [audit rubric](plugins/repo-hygiene/skills/repo-hygiene/references/audit-rubric.md) and [findings template](plugins/repo-hygiene/skills/repo-hygiene/assets/findings-template.md) to review the report.
 
-## Safety
+## Safety by design
 
 Check runtime registration, scripts, CI, and operational entrypoints before recommending deletion. Preserve supported migrations, authorization checks, and recovery paths. Mark uncertain candidates and missing coverage. Findings depend on the repository context, available tools, and runtime evidence.
 
-Audits and plans are read-only by default. Running untrusted project code, installing dependencies, accessing live systems, and committing or publishing changes require separate authorization.
+Running untrusted project code, installing dependencies, accessing live systems, and committing or publishing changes require separate authorization.
 
-## Package layout
+## Repository layout
 
 ```text
 .claude-plugin/marketplace.json          Claude Code catalog
@@ -121,7 +154,7 @@ plugins/repo-hygiene/
     tests/eval-cases.md                  Extended evaluation matrix
 ```
 
-## Validation
+## Validation and limitations
 
 Use the [repeatable behavioral evaluations](tests/behavioral/README.md) to verify installed-client behavior. The [extended evaluation matrix](plugins/repo-hygiene/skills/repo-hygiene/tests/eval-cases.md) covers additional scenarios. Package validation checks structure and file references. Test and review each proposed cleanup against the contracts it affects.
 
@@ -153,7 +186,7 @@ Open public issues for ordinary bugs and proposals. Maintainers review issues an
 
 For behavior changes, include a minimal, sanitized reproduction, the expected outcome, and verification evidence. Keep the skill portable and avoid mandatory runtime dependencies. Run the same package checks as CI. [Local validation commands](#local-validation-before-publishing) · [Package validation workflow](.github/workflows/validate.yml)
 
-## Releasing
+## Release qualification
 
 1. Qualify the exact candidate commit locally. Require passing structural checks, CI and vendor validation, clean-profile installs from the local candidate, the native fallback, and the owner-approved behavioral evaluation policy. Check the README commands and inspect the candidate tree and installed payloads for sensitive or unintended files.
 2. Confirm the private reporting entry is visible to a non-maintainer and that the repository owner has configured notifications before publishing the reporting instructions.
@@ -163,3 +196,11 @@ For behavior changes, include a minimal, sanitized reproduction, the expected ou
 ## License
 
 Keep the copyright and permission notices with distributed copies. The shared skill bundles a copy of the root notice for both marketplace installs and the native install. [MIT License](LICENSE)
+
+---
+
+<div align="center">
+
+**Evidence-backed cleanup for Claude Code and Codex.**
+
+</div>
