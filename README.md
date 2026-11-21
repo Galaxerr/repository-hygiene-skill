@@ -11,7 +11,7 @@ A repository-wide cleanup skill for **Claude Code** and **OpenAI Codex**.
 [![Codex](https://img.shields.io/badge/OpenAI_Codex-plugin-24292F)](#openai-codex)
 [![Validation](https://github.com/Galaxerr/repository-hygiene-skill/actions/workflows/validate.yml/badge.svg)](https://github.com/Galaxerr/repository-hygiene-skill/actions/workflows/validate.yml)
 
-[Installation](#installation) · [How it works](#how-it-works) · [Examples](#usage-examples) · [Safety](#safety-by-design) · [Contributing](#contributing)
+[Installation](#installation) · [How it works](#how-it-works) · [Examples](#usage-examples) · [Safety](#safety-by-design) · [Contributing](#contributing) · [Security](SECURITY.md)
 
 </div>
 
@@ -82,7 +82,7 @@ Audit this repository. Produce an evidence-backed cleanup plan.
 ```
 
 > [!NOTE]
-> Choose one Codex install route. For native discovery, copy the entire `plugins/repo-hygiene/skills/repo-hygiene` directory into `.agents/skills/` in the repository you want to audit. This includes the rubric and findings template. Remove the copied directory to uninstall the native skill. [Codex skill discovery](https://learn.chatgpt.com/docs/build-skills#where-codex-loads-local-skills)
+> Choose one Codex install route. For native discovery, copy the entire `plugins/repo-hygiene/skills/repo-hygiene` directory into `.agents/skills/` in the repository you want to audit. This includes the rubric, findings template, and MIT notice. Remove the copied directory to uninstall the native skill. [Codex skill discovery](https://learn.chatgpt.com/docs/build-skills#where-codex-loads-local-skills)
 
 ### Local validation before publishing
 
@@ -223,6 +223,7 @@ plugins/repo-hygiene/
   plugin.json                            Codex plugin metadata
   skills/repo-hygiene/
     SKILL.md                             Portable Agent Skill
+    LICENSE                              Bundled MIT notice
     agents/openai.yaml                   Codex presentation metadata
     references/audit-rubric.md           Evidence and risk rubric
     assets/findings-template.md          Report template
@@ -243,20 +244,20 @@ Use the [repeatable behavioral fixtures](tests/behavioral/README.md) to collect 
 
 ## Contributing
 
-Issues and pull requests are welcome, especially for:
+Open public issues for ordinary bugs and proposals. Maintainers review issues and focused pull requests. Contributions use the project's MIT terms, without a separate contributor agreement or required sign-off. Use the [security policy](SECURITY.md) for vulnerability reporting.
 
-- False-positive or false-negative cleanup cases.
-- Additional language and framework-specific evaluation scenarios.
-- Improvements to risk scoring, evidence quality, and concise reporting.
-- Compatibility fixes for Claude Code or Codex marketplace packaging.
+For behavior changes, include a minimal, sanitized reproduction, the expected outcome, and verification evidence. Keep the skill portable and avoid mandatory runtime dependencies. Run the same package checks as CI. [Local validation commands](#local-validation-before-publishing)
 
-When proposing a behavioral change, include a minimal reproducible repository example and the expected audit outcome. Keep the core skill portable and avoid adding mandatory runtime dependencies.
+## Releasing
 
-For package changes, run the [local validation commands](#local-validation-before-publishing) used by CI.
+1. Qualify the exact candidate commit locally. Require passing structural checks, CI and vendor validation, clean-profile installs from the local candidate, the native fallback, and the owner-approved behavioral evaluation policy. Check the README commands and inspect the candidate tree and installed payloads for sensitive or unintended files.
+2. Confirm the private reporting entry is visible to a non-maintainer and that the repository owner has configured notifications before publishing the reporting instructions.
+3. Match both manifest versions to the reviewed tag, starting with `v1.0.0`. After separate owner authorization for public exposure and any required tag creation, verify clean-profile marketplace installs and the native fallback from the advertised public source and ref. Confirm the release ref resolves to the qualified commit. Prefer a versioned install source where the host supports it and the exact flow passes testing.
+4. With the qualification checks passed and private reporting verified, the repository owner explicitly approves the exact revision and manually publishes the reviewed tag's release. Record the tested and public commits, source and ref, CI run, evaluator, results, known limits, and owner approval. Include changes, tested client versions, limitations, and update or recovery steps in the release notes. Material changes require rerunning the affected checks.
 
 ## License
 
-Distributed under the [MIT License](LICENSE).
+Keep the copyright and permission notices with distributed copies. The shared skill bundles a copy of the root notice for both marketplace installs and the native install. [MIT License](LICENSE)
 
 ---
 

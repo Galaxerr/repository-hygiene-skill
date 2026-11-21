@@ -17,6 +17,7 @@ PLUGIN = Path("plugins/repo-hygiene")
 MANIFEST = PLUGIN / "plugin.json"
 CLAUDE_MANIFEST = PLUGIN / ".claude-plugin/plugin.json"
 SKILL = PLUGIN / "skills/repo-hygiene/SKILL.md"
+PACKAGED_LICENSE = SKILL.parent / "LICENSE"
 RUBRIC = SKILL.parent / "references/audit-rubric.md"
 PRESENTATION = SKILL.parent / "agents/openai.yaml"
 VALIDATOR = Path("tests/validate_package.py")
@@ -64,6 +65,14 @@ class PackageValidationTest(unittest.TestCase):
 
     def test_valid_tree(self):
         self.validate()
+
+    def test_packaged_license_matches_root_notice(self):
+        (self.checkout / PACKAGED_LICENSE).write_text("MIT\n", encoding="utf-8")
+        self.validate(f"{PACKAGED_LICENSE}: must match the root LICENSE")
+
+    def test_missing_packaged_license(self):
+        (self.checkout / PACKAGED_LICENSE).unlink()
+        self.validate(f"{PACKAGED_LICENSE}: missing file")
 
     def test_matching_new_versions(self):
         for path in (CLAUDE_MANIFEST, MANIFEST):

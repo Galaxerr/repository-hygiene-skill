@@ -243,7 +243,11 @@ def validate_resource_links(body, tracked):
 
 def main():
     tracked = tracked_files()
-    tracked_file(Path("LICENSE"), tracked)
+    root_license = tracked_file(Path("LICENSE"), tracked)
+    license_path = SKILL_DIR / "LICENSE"
+    skill_license = tracked_file(license_path, tracked, SKILL_DIR)
+    require(skill_license.read_bytes() == root_license.read_bytes(), license_path,
+            "must match the root LICENSE")
     unsupported_components = {
         ".codex-plugin", ".mcp.json", "mcp.json", ".app.json", "agents", "commands", "hooks",
     }
