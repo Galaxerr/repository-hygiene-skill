@@ -239,7 +239,7 @@ The package includes structural checks and evaluation scenarios. **It is not a d
 
 A clean structural validation does not mean every suggested deletion is safe. For high-risk changes, use independent review, relevant integration tests, and owner approval. Some dynamic usages cannot be proven without executing the application in an appropriate test environment.
 
-See [evaluation cases](plugins/repo-hygiene/skills/repo-hygiene/tests/eval-cases.md) for scenarios involving dynamic references, historical schemas, security boundaries, and false positives.
+Use the [repeatable behavioral fixtures](tests/behavioral/README.md) to collect evidence from installed clients. The [manual evaluation matrix](plugins/repo-hygiene/skills/repo-hygiene/tests/eval-cases.md) covers additional scenarios involving dynamic references, historical schemas, security boundaries, and false positives.
 
 ## Contributing
 
