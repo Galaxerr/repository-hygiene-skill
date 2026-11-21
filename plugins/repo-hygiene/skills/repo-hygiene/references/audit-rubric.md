@@ -1,38 +1,32 @@
-# Audit evidence and ranking rubric
+# Audit rubric
 
-Use this rubric when distinguishing hypotheses from actionable findings.
+## Evidence and confidence
 
-## Confidence
+Record the candidate, exact location, checked support surface, and observations that establish the claim. For negative evidence, record what was searched and where. Check relevant:
 
-- **Confirmed:** Reproducible evidence proves the path is unused, duplicated, or unnecessarily complex within the explicitly checked support surface; relevant dynamic/runtime/operational references have been considered.
-- **Probable:** Strong static evidence, but an external caller, dynamic registration, or untested workflow could still use the code. Require additional inspection, instrumentation, or owner decision before deletion.
-- **Uncertain:** Incomplete coverage or conflicting evidence. Keep as an investigation item; do not recommend removal yet.
+| Surface | Evidence to trace |
+| --- | --- |
+| Runtime and build | Direct callers, reflection, computed names, registration by convention, plugins, generated inputs and outputs, build targets, packaging and import or startup side effects |
+| Configuration and operations | Supported flags, profiles and platforms, CI, scheduled tasks, operator runbooks, maintenance commands, fallback, restore and rollback paths |
+| Contracts and state | Published interfaces and downstream consumers, supported upgrade paths, persisted formats, retention requirements, and trust boundaries |
 
-## Benefit
+- **Confirmed:** Reproducible evidence establishes the claim across the relevant supported paths. For dead code, show why the candidate is unreachable or unconsumed. For example, trace all entrypoints that can reach a private symbol and rule out applicable indirect routes. Bound the claim to the checked support surface. A relevant inaccessible consumer, configuration, or workflow prevents confirmation.
+- **Probable:** Strong evidence supports the claim, but a specific plausible path or obligation remains unchecked. Name the check or owner evidence needed.
+- **Uncertain:** Evidence is sparse, conflicting, or too incomplete to bound the claim. State the gap.
 
-- **High:** Eliminates significant maintenance burden, duplicated fragile policy, dependencies, or repeated expensive work; measured benefits where feasible.
-- **Medium:** Meaningfully improves clarity, local complexity, or testability with limited blast radius.
-- **Low:** Minor stylistic or local reduction; deprioritize unless nearly free.
+A positive reference is evidence of use when its caller or workflow is supported. Verify that a reference can be reached before counting it. Historical references alone establish neither current use nor retirement. If a supported path reaches the candidate, retain it as a live path and report it only when it explains a decision or supports a separate finding.
 
-## Risk
+## Benefit, risk, and effort
 
-- **Low:** Internal-only, no persistent state/external contract, straightforward focused tests and rollback.
-- **Medium:** Public/indirect callers, multi-module effects, runtime behavior, configuration, or operator workflows need checking.
-- **High:** Auth/security, trust boundaries, schema/migrations, data durability, compatibility, remote side effects, deployment, or rollback. Requires explicit contract-level acceptance; keep separate from cosmetic cleanup.
+Assess each independently of confidence. Use high, medium, or low with a short reason.
 
-## Verification patterns
+- **Benefit:** High for substantial maintenance burden or repeated expensive work removed. Medium for meaningful local simplification. Low for minor or stylistic gains. Label estimates and give numbers only when measured.
+- **Risk:** Low for isolated internals with straightforward verification and reversal. Medium for cross-module or runtime effects with bounded consumers. High for possible effects on public or external contracts, security, persistent data, compatibility, deployment, or recovery. Name the concrete failure and affected consumers or state. Consider whether reverting code can undo the effects. Keep high-risk changes separate with contract checks and any required owner decision.
+- **Effort:** Include evidence gathering, implementation, verification, and coordination.
 
-| Candidate | Evidence to collect | Typical checks |
-| --- | --- | --- |
-| Unused function/file | Imports + dynamic references + entrypoint/config/CI scans | Static analyzer, targeted tests, smoke command |
-| Duplicate logic | Compare semantics, edge cases, callers and trust boundaries | Equivalence tests, negative cases |
-| Unused UI/CLI/API | Router/registration, clients, docs, telemetry if available | Endpoint/command smoke, compatibility |
-| Obsolete schema or migration | Supported upgrade paths, persisted versions, rollback policy | Old-format fixtures, upgrade/rollback refusal |
-| Redundant DB/API/network | Call graphs, actual traces or profiles when available | Query counts, microbenchmark, consistency tests |
-| Disconnected artifact | Build manifests, CI, packaging, operator/recovery references | Package/build, docs-link/check scripts |
+## Checks matched to the claim
 
-Do not automatically execute unknown repository code, package scripts, migrations, or networked checks during reconnaissance. Report the limitation and request appropriate authorization for execution.
-
-## Priority suggestion
-
-Assess each finding on **confidence, benefit, risk and effort**. Use qualitative ratings instead of manufacturing a single precision score. Work first on confirmed high-benefit low-risk items; treat high-risk findings as separate decisions even when their potential benefit is large.
+- **Unused code or artifacts:** Verify reachability from entrypoints, build outputs, packages, and operational workflows. Use targeted build or smoke checks where relevant.
+- **Duplicate logic:** Compare outcomes, errors, side effects, and ordering. Preserve enforcement at each independent trust boundary. Verify negative as well as successful cases.
+- **Compatibility and recovery:** Identify supported versions, failure modes, and retirement policy. Verify old data, upgrade and rollback paths, or recovery with representative fixtures.
+- **Redundant operations:** Verify whether retries, freshness, consistency, or observability require the work. Use measurements for runtime claims.

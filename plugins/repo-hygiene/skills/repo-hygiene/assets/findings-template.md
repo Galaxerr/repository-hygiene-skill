@@ -1,46 +1,26 @@
-# Repository hygiene audit — <repository>
+# Repository hygiene report
 
-- **Scope:** <root/ref/commit, branch and dirty-state note>
-- **Mode:** audit / plan / implement
-- **Coverage:** <subsystems actually inspected>
-- **Not inspected / limitations:** <explicit exclusions>
-- **Applicable contracts:** <document/entrypoint/schema/security/release sources>
+- **Snapshot and mode:** <revision or snapshot, working-tree state, audit / plan / implement>
+- **Scope and coverage:** <requested scope, areas inspected, relevant contracts and exclusions>
+- **Summary:** <highest-value supported outcome and any consequential decisions to retain live paths>
 
-## Executive summary
+## Confirmed cleanup findings
 
-- Confirmed findings: <count, if known>
-- Probable / uncertain hypotheses: <count>
-- Best near-term simplifications: <brief summary>
-- Behavior/security compatibility posture: <what must remain invariant>
+For each finding:
 
-## Finding H-001 — <short title>
+- **ID, category, location:** <stable ID, category, path and symbol or line>
+- **Claim and evidence:** <what is unnecessary, observations or reproducible checks, supported paths ruled out, and evidence that would overturn the claim>
+- **Benefit, risk, effort:** <low / medium / high for each, with reasons and affected contracts>
+- **Recommendation and checks:** <change, observable acceptance checks, and stop or rollback condition>
 
-- **Category / priority:** <dead / duplicate / interface / complexity / legacy / operations / artifact / debt> | <priority>
-- **Location:** `<path:lines>` — `<symbol or artifact>`
-- **Evidence:** <references, code paths, commands, actual observations>
-- **Counterchecks:** <dynamic, packaging, CI, operators, migration, recovery, external consumers>
-- **Confidence:** confirmed / probable / uncertain
-- **Why unnecessary or complex:** <specific cause>
-- **Estimated benefit:** <reasoned qualitative estimate or measured quantity>
-- **Risks / preserved contracts:** <specific side effects and backwards-compatibility concerns>
-- **Recommendation:** remove / consolidate / simplify / retain / investigate
-- **Acceptance and tests:** <exact observable checks>
-- **Rollback or stop condition:** <how to recognize/regress/restore>
+## Hypotheses
 
-Repeat once per finding. State when a candidate is not actionable.
+<Give each hypothesis an ID and location. Label it probable or uncertain and give the missing evidence and next check.>
 
-## Workstream plan
+## Cleanup order
 
-| Order | Ticket | Findings | Scope | Acceptance / dependencies | Risk |
-| --- | --- | --- | --- | --- | --- |
-| 1 | <...> | H-001 | <...> | <...> | low |
+<List actionable IDs by priority and note prerequisites. Include scope, acceptance checks, and rollback for each task in plan mode. Give a no-change disposition if nothing qualifies.>
 
-## Verification ledger
+## Verification
 
-| Check | Actual result | Evidence or limitation |
-| --- | --- | --- |
-| <command or inspection> | PASS / FAIL / NOT RUN | <what it proves> |
-
-## Final disposition
-
-<Highest-value ready ticket, owner decisions or blockers, and explicit claims not yet verified.>
+<Record inspection, test, or measurement and its actual result. Identify relevant checks not run and why. In implement mode, include the changes made and unresolved failures.>
