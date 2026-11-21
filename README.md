@@ -49,14 +49,14 @@ Works across Python, JavaScript/TypeScript, Go, Rust, and mixed-language reposit
 
 ## Installation
 
-The same skill is distributed through Claude Code and Codex marketplace manifests. **The commands below work after this repository is published** at `Galaxerr/repo-hygiene-skill`.
+The same skill is packaged for Claude Code and Codex marketplaces. Public installation commands target `Galaxerr/repository-hygiene-skill` and are pending release qualification.
 
 ### Claude Code
 
 Run inside Claude Code:
 
 ```text
-/plugin marketplace add Galaxerr/repo-hygiene-skill
+/plugin marketplace add Galaxerr/repository-hygiene-skill
 /plugin install repo-hygiene@repo-hygiene-marketplace
 ```
 
@@ -71,18 +71,18 @@ Invoke:
 In your terminal, with a marketplace-capable Codex installation:
 
 ```bash
-codex plugin marketplace add Galaxerr/repo-hygiene-skill --ref main
+codex plugin marketplace add Galaxerr/repository-hygiene-skill --ref main
 codex plugin add repo-hygiene@repo-hygiene-marketplace
 ```
 
-Invoke in Codex:
+After a local marketplace install, Codex CLI 0.158.0 listed `repo-hygiene:repo-hygiene`. Model-backed invocation and public installation are pending qualification. Use this prompt with the skill selected:
 
 ```text
-$repo-hygiene Audit this repository. Produce an evidence-backed cleanup plan.
+Audit this repository. Produce an evidence-backed cleanup plan.
 ```
 
 > [!NOTE]
-> Codex plugin commands depend on your installed Codex version. If plugin marketplace support is unavailable, use the native Agent Skills installation workflow with `plugins/repo-hygiene/skills/repo-hygiene`.
+> Choose one Codex install route. For native discovery, copy the entire `plugins/repo-hygiene/skills/repo-hygiene` directory into `.agents/skills/` in the repository you want to audit. This includes the rubric and findings template. Remove the copied directory to uninstall the native skill. [Codex skill discovery](https://learn.chatgpt.com/docs/build-skills#where-codex-loads-local-skills)
 
 ### Local validation before publishing
 
@@ -161,7 +161,7 @@ cleanup ticket. Run targeted tests and report the exact diff and results.
 Do not commit or push.
 ```
 
-In Codex, replace the namespaced Claude command with `$repo-hygiene` and keep the remainder of the prompt.
+In Codex, select `repo-hygiene:repo-hygiene` for the marketplace skill or `repo-hygiene` for the native copy, then enter the remainder of the prompt.
 
 ### Example finding
 

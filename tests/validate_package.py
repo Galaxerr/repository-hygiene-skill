@@ -34,6 +34,7 @@ def main():
     assert xp["source"]["source"] == "local"
     assert xp["source"]["path"] == "./plugins/repo-hygiene"
     assert xp["policy"]["installation"] == "AVAILABLE"
+    assert xp["policy"]["authentication"] == "ON_INSTALL"
     assert xp["category"]
     for entry in (cp["source"], xp["source"]["path"]):
         assert not any(p == ".." for p in Path(entry).parts), "Unsafe plugin path"
@@ -42,6 +43,9 @@ def main():
     pmanifest = read_json("plugins/repo-hygiene/plugin.json")
     assert cmanifest["name"] == pmanifest["name"] == cp["name"]
     assert cmanifest["version"] == pmanifest["version"] == "1.0.0"
+    canonical_url = "https://github.com/Galaxerr/repository-hygiene-skill"
+    for field in ("repository", "homepage"):
+        assert cmanifest[field] == pmanifest[field] == canonical_url
     assert pmanifest["$schema"] == "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json"
     assert cmanifest["license"] == pmanifest["license"] == "MIT"
     assert (ROOT / "LICENSE").is_file()
