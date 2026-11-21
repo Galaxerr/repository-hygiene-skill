@@ -1,0 +1,20 @@
+{
+  "name": "repo-hygiene",
+  "displayName": "Repository Hygiene",
+  "version": "1.0.0",
+  "description": "Evidence-backed, risk-ranked repository cleanup audits and safe implementation planning.",
+  "author": {
+    "name": "Galaxerr",
+    "url": "https://github.com/Galaxerr"
+  },
+  "repository": "https://github.com/Galaxerr/repo-hygiene-skill",
+  "homepage": "https://github.com/Galaxerr/repo-hygiene-skill",
+  "license": "MIT",
+  "keywords": [
+    "codebase",
+    "cleanup",
+    "refactoring",
+    "dead-code",
+    "technical-debt"
+  ]
+}

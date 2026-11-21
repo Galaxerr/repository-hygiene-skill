@@ -1,0 +1,4 @@
+interface:
+  display_name: "Repository Hygiene"
+  short_description: "Audit and simplify repositories safely"
+  default_prompt: "Use $repo-hygiene to audit this repository for dead code, duplication, obsolete paths, redundant operations, and technical debt. Produce an evidence-backed, risk-ranked cleanup plan without editing code."
