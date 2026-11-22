@@ -22,10 +22,7 @@ A shared Agent Skill for evidence-backed cleanup audits in **Claude Code** and *
 
 ## Installation
 
-> [!IMPORTANT]
-> These are candidate instructions for `v1.0.0` from [Galaxerr/repository-hygiene-skill](https://github.com/Galaxerr/repository-hygiene-skill). Wait for the qualified release before using the GitHub commands.
-
-Local lifecycle checks used Claude Code 2.1.148 and Codex CLI 0.158.0 on Linux. Earlier local Codex CLI 0.171.0 audits exercised the picker on both Codex routes. Public GitHub installation and the examples below still require release qualification.
+Install from the published `v1.0.0` tag. Local installation checks used Claude Code 2.1.148 and Codex CLI 0.158.0 on Linux. The four desktop behavior cases used Codex CLI 0.171.0.
 
 ### Prerequisites
 
@@ -85,10 +82,16 @@ codex plugin marketplace remove repo-hygiene-marketplace
 From the target repository root, use a shell with `mktemp` and `cp`. Make sure `.agents/skills/repo-hygiene` does not exist before copying. Copy the complete skill directory so its rubric, template, and MIT notice travel with it.
 
 ```bash
-checkout=$(mktemp -d)
-git clone --branch v1.0.0 --single-branch https://github.com/Galaxerr/repository-hygiene-skill.git "$checkout"
-mkdir -p .agents/skills
-cp -R "$checkout/plugins/repo-hygiene/skills/repo-hygiene" .agents/skills/
+(
+  set -e
+  test ! -e .agents/skills/repo-hygiene
+  test ! -L .agents/skills/repo-hygiene
+  checkout=$(mktemp -d)
+  git clone --branch v1.0.0 --single-branch https://github.com/Galaxerr/repository-hygiene-skill.git "$checkout"
+  mkdir -p .agents/skills
+  cp -R "$checkout/plugins/repo-hygiene/skills/repo-hygiene" .agents/skills/
+  printf 'Temporary source checkout: %s\n' "$checkout"
+)
 ```
 
 Start Codex in the target repository, type `$repo-hygiene`, select **Repository Hygiene**, and use the same audit prompt. The native skill ID is `repo-hygiene`. To uninstall, exit Codex and remove the `.agents/skills/repo-hygiene` directory you copied. The temporary source checkout can also be removed. Keep the copied skill out of commits unless you intend to share it with the repository.
@@ -189,7 +192,7 @@ For behavior changes, include a minimal, sanitized reproduction, the expected ou
 ## Release qualification
 
 1. Qualify the exact candidate commit locally. Require passing structural checks, CI and vendor validation, clean-profile installs from the local candidate, the native fallback, and the owner-approved behavioral evaluation policy. Check the README commands and inspect the candidate tree and installed payloads for sensitive or unintended files.
-2. Confirm the private reporting entry is visible to a non-maintainer and that the repository owner has configured notifications before publishing the reporting instructions.
+2. Verify private reporting is enabled and the public Advisories page links to the private form. Confirm the owner has configured report notifications. Record signed-in reporter access and notification delivery as unverified when they cannot be tested, and require an explicit owner decision on that evidence gap before publishing.
 3. Match both manifest versions to the reviewed tag, starting with `v1.0.0`. After separate owner authorization for public exposure and any required tag creation, verify clean-profile marketplace installs and the native fallback from the advertised public source and ref. Confirm the release ref resolves to the qualified commit. Prefer a versioned install source where the host supports it and the exact flow passes testing.
 4. With the qualification checks passed and private reporting verified, the repository owner explicitly approves the exact revision and manually publishes the reviewed tag's release. Record the tested and public commits, source and ref, CI run, evaluator, results, known limits, and owner approval. Include changes, tested client versions, limitations, and update or recovery steps in the release notes. Material changes require rerunning the affected checks.
 
